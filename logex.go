@@ -30,12 +30,17 @@ var (
 	Infof      = std.Infof
 	Info       = std.Info
 	Debug      = std.Debug
+	Debugf     = std.Debugf
 	Error      = std.Error
+	Errorf     = std.Errorf
 	Warn       = std.Warn
+	Warnf      = std.Warnf
 	PrintStack = std.PrintStack
 	Stack      = std.Stack
 	Panic      = std.Panic
+	Panicf     = std.Panicf
 	Fatal      = std.Fatal
+	Fatalf     = std.Fatalf
 	Struct     = std.Struct
 	Pretty     = std.Pretty
 	Todo       = std.Todo
