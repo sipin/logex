@@ -31,6 +31,8 @@ var (
 	Info       = std.Info
 	Debug      = std.Debug
 	Debugf     = std.Debugf
+	Trace      = std.Trace
+	Tracef     = std.Tracef
 	Error      = std.Error
 	Errorf     = std.Errorf
 	Warn       = std.Warn
@@ -51,6 +53,7 @@ var (
 	ERROR  = "[\x1b[0;35mERROR\x1b[0m] "
 	PANIC  = "[PANIC] "
 	DEBUG  = "[DEBUG] "
+	TRACE  = "[TRACE] "
 	WARN   = "[WARN] "
 	FATAL  = "[FATAL] "
 	STRUCT = "[STRUCT] "
@@ -123,6 +126,21 @@ func (l Logger) Debugf(f string, o ...interface{}) {
 		return
 	}
 	l.Output(2, DEBUG+sprintf(f, o))
+}
+
+// Trace -----------------------------------------------------------------------
+
+func (l Logger) Trace(o ...interface{}) {
+	if DebugLevel > 0 {
+		return
+	}
+	l.Output(2, TRACE+sprint(o))
+}
+func (l Logger) Tracef(f string, o ...interface{}) {
+	if DebugLevel > 0 {
+		return
+	}
+	l.Output(2, TRACE+sprintf(f, o))
 }
 
 // Todo ------------------------------------------------------------------------
