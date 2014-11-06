@@ -49,7 +49,7 @@ var (
 )
 
 var (
-	INFO   = "[INFO] "
+	INFO   = "[\x1b[1;33mINFO\x1b[0m] "
 	ERROR  = "[\x1b[0;35mERROR\x1b[0m] "
 	PANIC  = "[PANIC] "
 	DEBUG  = "[DEBUG] "
@@ -89,28 +89,28 @@ func (l Logger) Pretty(os ...interface{}) {
 			content += color(colors[i%len(colors)], string(ret)) + "\n"
 		}
 	}
-	l.Output(2, PRETTY+content)
+	l.Output(2, PRETTY, content)
 }
 
 // Print -----------------------------------------------------------------------
 
 func (l Logger) Print(o ...interface{}) {
-	l.Output(2, sprint(o))
+	l.Output(2, "", sprint(o))
 }
 func (l Logger) Printf(layout string, o ...interface{}) {
-	l.Output(2, sprintf(layout, o))
+	l.Output(2, "", sprintf(layout, o))
 }
 func (l Logger) Println(o ...interface{}) {
-	l.Output(2, sprint(o))
+	l.Output(2, "", sprint(o))
 }
 
 // Info ------------------------------------------------------------------------
 
 func (l Logger) Info(o ...interface{}) {
-	l.Output(2, INFO+sprint(o))
+	l.Output(2, INFO, sprint(o))
 }
 func (l Logger) Infof(f string, o ...interface{}) {
-	l.Output(2, INFO+sprintf(f, o))
+	l.Output(2, INFO, sprintf(f, o))
 }
 
 // Debug -----------------------------------------------------------------------
@@ -119,13 +119,13 @@ func (l Logger) Debug(o ...interface{}) {
 	if DebugLevel > 0 {
 		return
 	}
-	l.Output(2, DEBUG+sprint(o))
+	l.Output(2, DEBUG, sprint(o))
 }
 func (l Logger) Debugf(f string, o ...interface{}) {
 	if DebugLevel > 0 {
 		return
 	}
-	l.Output(2, DEBUG+sprintf(f, o))
+	l.Output(2, DEBUG, sprintf(f, o))
 }
 
 // Trace -----------------------------------------------------------------------
@@ -134,59 +134,59 @@ func (l Logger) Trace(o ...interface{}) {
 	if DebugLevel > 0 {
 		return
 	}
-	l.Output(2, TRACE+sprint(o))
+	l.Output(2, TRACE, sprint(o))
 }
 func (l Logger) Tracef(f string, o ...interface{}) {
 	if DebugLevel > 0 {
 		return
 	}
-	l.Output(2, TRACE+sprintf(f, o))
+	l.Output(2, TRACE, sprintf(f, o))
 }
 
 // Todo ------------------------------------------------------------------------
 
 func (l Logger) Todo(o ...interface{}) {
-	l.Output(2, TODO+sprint(o))
+	l.Output(2, TODO, sprint(o))
 }
 
 // Error -----------------------------------------------------------------------
 
 func (l Logger) Error(o ...interface{}) {
-	l.Output(2, ERROR+sprint(o))
+	l.Output(2, ERROR, sprint(o))
 }
 func (l Logger) Errorf(f string, o ...interface{}) {
-	l.Output(2, ERROR+sprintf(f, o))
+	l.Output(2, ERROR, sprintf(f, o))
 }
 
 // Warn ------------------------------------------------------------------------
 
 func (l Logger) Warn(o ...interface{}) {
-	l.Output(2, WARN+sprint(o))
+	l.Output(2, WARN, sprint(o))
 }
 func (l Logger) Warnf(f string, o ...interface{}) {
-	l.Output(2, WARN+sprintf(f, o))
+	l.Output(2, WARN, sprintf(f, o))
 }
 
 // Panic -----------------------------------------------------------------------
 
 func (l Logger) Panic(o ...interface{}) {
-	l.Output(2, PANIC+sprint(o))
+	l.Output(2, PANIC, sprint(o))
 	panic(o)
 }
 func (l Logger) Panicf(f string, o ...interface{}) {
 	info := sprintf(f, o)
-	l.Output(2, PANIC+info)
+	l.Output(2, PANIC, info)
 	panic(info)
 }
 
 // Fatal -----------------------------------------------------------------------
 
 func (l Logger) Fatal(o ...interface{}) {
-	l.Output(2, FATAL+sprint(o))
+	l.Output(2, FATAL, sprint(o))
 	os.Exit(1)
 }
 func (l Logger) Fatalf(f string, o ...interface{}) {
-	l.Output(2, FATAL+sprintf(f, o))
+	l.Output(2, FATAL, sprintf(f, o))
 	os.Exit(1)
 }
 
@@ -201,7 +201,7 @@ func (l Logger) Struct(o ...interface{}) {
 	if len(layout) > 0 {
 		layout = layout[2:]
 	}
-	l.Output(2, STRUCT+sprintf(layout, items))
+	l.Output(2, STRUCT, sprintf(layout, items))
 }
 
 // Stack -----------------------------------------------------------------------
@@ -216,9 +216,9 @@ func (l Logger) Stack() []byte {
 	return a[:n]
 }
 
-func (l Logger) Output(calldepth int, s string) error {
+func (l Logger) Output(calldepth int, level, msg string) error {
 	calldepth += l.depth + 1
-	return goLogStd.Output(calldepth, l.makePrefix(calldepth)+s)
+	return goLogStd.Output(calldepth, level+msg+" \x1b[0;37m"+l.makePrefix(calldepth)+"\x1b[0m")
 }
 
 func (l Logger) makePrefix(calldepth int) string {
