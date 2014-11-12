@@ -26,26 +26,30 @@ var goLogStd = goLog.New(os.Stderr, "", goLog.LstdFlags)
 var std = Logger{1, ""}
 var Std = Logger{1, ""}
 var (
-	Println    = std.Println
-	Infof      = std.Infof
-	Info       = std.Info
-	Debug      = std.Debug
-	Debugf     = std.Debugf
-	Trace      = std.Trace
-	Tracef     = std.Tracef
-	Error      = std.Error
-	Errorf     = std.Errorf
-	Warn       = std.Warn
-	Warnf      = std.Warnf
-	PrintStack = std.PrintStack
-	Stack      = std.Stack
-	Panic      = std.Panic
-	Panicf     = std.Panicf
-	Fatal      = std.Fatal
-	Fatalf     = std.Fatalf
-	Struct     = std.Struct
-	Pretty     = std.Pretty
-	Todo       = std.Todo
+	Println     = std.Println
+	Infof       = std.Infof
+	Info        = std.Info
+	Debug       = std.Debug
+	Debugf      = std.Debugf
+	Trace       = std.Trace
+	Tracef      = std.Tracef
+	TraceEnter  = std.TraceEnter
+	TraceEnterf = std.TraceEnterf
+	TraceExit   = std.TraceExit
+	TraceExitf  = std.TraceExitf
+	Error       = std.Error
+	Errorf      = std.Errorf
+	Warn        = std.Warn
+	Warnf       = std.Warnf
+	PrintStack  = std.PrintStack
+	Stack       = std.Stack
+	Panic       = std.Panic
+	Panicf      = std.Panicf
+	Fatal       = std.Fatal
+	Fatalf      = std.Fatalf
+	Struct      = std.Struct
+	Pretty      = std.Pretty
+	Todo        = std.Todo
 )
 
 var (
@@ -136,11 +140,80 @@ func (l Logger) Trace(o ...interface{}) {
 	}
 	l.Output(2, TRACE, sprint(o))
 }
+
 func (l Logger) Tracef(f string, o ...interface{}) {
 	if DebugLevel > 0 {
 		return
 	}
 	l.Output(2, TRACE, sprintf(f, o))
+}
+
+func (l Logger) TraceEnter(o ...interface{}) {
+	if DebugLevel > 0 {
+		return
+	}
+	pc, _, _, ok := runtime.Caller(2)
+	if !ok {
+		return
+	}
+	func_ := runtime.FuncForPC(pc)
+	s := fmt.Sprintf("enter %s", func_.Name())
+	s1 := sprint(o)
+	if len(s1) > 0 {
+		s += ", " + s1
+	}
+	l.Output(2, TRACE, s)
+}
+
+func (l Logger) TraceEnterf(f string, o ...interface{}) {
+	if DebugLevel > 0 {
+		return
+	}
+	pc, _, _, ok := runtime.Caller(2)
+	if !ok {
+		return
+	}
+	func_ := runtime.FuncForPC(pc)
+	s := fmt.Sprintf("enter %s", func_.Name())
+	s1 := sprintf(f, o)
+	if len(s1) > 0 {
+		s += ", " + s1
+	}
+	l.Output(2, TRACE, s)
+}
+
+func (l Logger) TraceExit(o ...interface{}) {
+	if DebugLevel > 0 {
+		return
+	}
+	pc, _, _, ok := runtime.Caller(2)
+	if !ok {
+		return
+	}
+	func_ := runtime.FuncForPC(pc)
+	s := fmt.Sprintf("exit %s", func_.Name())
+	s1 := sprint(o)
+	if len(s1) > 0 {
+		s += ", " + s1
+	}
+	l.Output(2, TRACE, s)
+}
+
+func (l Logger) TraceExitf(f string, o ...interface{}) {
+	if DebugLevel > 0 {
+		return
+	}
+	pc, _, _, ok := runtime.Caller(2)
+	if !ok {
+		return
+	}
+	func_ := runtime.FuncForPC(pc)
+	s := fmt.Sprintf("exit %s", func_.Name())
+	s1 := sprintf(f, o)
+	if len(s1) > 0 {
+		s += ", " + s1
+	}
+	l.Output(2, TRACE, s)
 }
 
 // Todo ------------------------------------------------------------------------
